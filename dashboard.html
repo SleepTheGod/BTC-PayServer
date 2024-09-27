@@ -16,9 +16,18 @@
                 <li><a href="payment.html">Make Payment</a></li>
                 <li><a href="history.html">Transaction History</a></li>
                 <li><a href="settings.html">Account Settings</a></li>
-                <li><a href="login.html">Logout</a></li>
+                <li><a href="login.html" onclick="logout()">Logout</a></li>
             </ul>
         </nav>
+
+        <script>
+            function logout() {
+                // Basic logout handling (you can expand this with session clearing on the backend)
+                alert("Logged out successfully!");
+                // Redirect to login page (optional)
+                window.location.href = "login.html";
+            }
+        </script>
     </div>
 </body>
 </html>
