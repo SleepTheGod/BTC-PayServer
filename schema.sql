@@ -31,7 +31,7 @@ CREATE TABLE account_settings (
 );
 
 -- Insert a sample user (with a hashed password)
--- You should hash the password in your application code (e.g., using bcrypt)
+-- Here, we are using a hashed password for 'root', you should ensure this is hashed securely.
 INSERT INTO users (username, password_hash, email, bitcoin_rpc_username, bitcoin_rpc_password, balance)
 VALUES (
     'root', 
