@@ -5,6 +5,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,  -- Store hashed passwords
     email VARCHAR(100) NOT NULL UNIQUE,
     balance DECIMAL(16, 8) DEFAULT 0.00000000, -- Bitcoin balance (up to 8 decimal places)
+    bitcoin_rpc_username VARCHAR(50) NOT NULL,  -- Bitcoin API username
+    bitcoin_rpc_password VARCHAR(255) NOT NULL, -- Bitcoin API password (store hashed or encrypted for security)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -30,8 +32,15 @@ CREATE TABLE account_settings (
 
 -- Insert a sample user (with a hashed password)
 -- You should hash the password in your application code (e.g., using bcrypt)
-INSERT INTO users (username, password_hash, email, balance)
-VALUES ('testuser', '$2y$10$yF1HdBjF5/7FfH6fTjvWae', 'test@example.com', 0.10000000);
+INSERT INTO users (username, password_hash, email, bitcoin_rpc_username, bitcoin_rpc_password, balance)
+VALUES (
+    'root', 
+    '$2y$10$7aV7g5K1jQZ7b4JPSm7j4eOFlRbfF9PH1HQhEee9PfQ8lLqk/VS7y', -- Example hash for 'root'
+    'root@example.com', 
+    'btc_rpc_user', 
+    'btc_rpc_pass', 
+    0.10000000
+);
 
 -- Insert a sample transaction
 INSERT INTO transactions (user_id, amount, transaction_type, status)
