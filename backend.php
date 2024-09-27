@@ -100,26 +100,63 @@ class Bitcoin
     }
 }
 
+// Database connection settings
+$db_host = 'localhost';
+$db_user = 'your_db_user'; // Replace with your database username
+$db_pass = 'your_db_password'; // Replace with your database password
+$db_name = 'your_db_name'; // Replace with your database name
+
+// Create database connection
+$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $host = $_POST['host'] ?: 'localhost';
-    $port = $_POST['port'] ?: 8332;
-    $certificate = $_POST['certificate'];
+    
+    // Fetch user data from the database
+    $stmt = $conn->prepare("SELECT bitcoin_rpc_username, bitcoin_rpc_password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->store_result();
+    
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($bitcoin_rpc_username, $bitcoin_rpc_password);
+        $stmt->fetch();
+        
+        // Verify password (assumes passwords are hashed with bcrypt)
+        if (password_verify($password, $bitcoin_rpc_password)) {
+            $host = $_POST['host'] ?: 'localhost';
+            $port = $_POST['port'] ?: 8332;
+            $certificate = $_POST['certificate'];
 
-    $bitcoin = new Bitcoin($username, $password, $host, $port);
-    if (!empty($certificate)) {
-        $bitcoin->setSSL($certificate);
-    }
+            $bitcoin = new Bitcoin($bitcoin_rpc_username, $password, $host, $port);
+            if (!empty($certificate)) {
+                $bitcoin->setSSL($certificate);
+            }
 
-    $info = $bitcoin->getinfo();
+            $info = $bitcoin->getinfo();
 
-    if ($info) {
-        echo "<h2>Bitcoin Server Info:</h2>";
-        echo "<pre>" . print_r($info, true) . "</pre>";
+            if ($info) {
+                echo "<h2>Bitcoin Server Info:</h2>";
+                echo "<pre>" . print_r($info, true) . "</pre>";
+            } else {
+                echo "<h2>Error:</h2>";
+                echo "<pre>" . $bitcoin->error . "</pre>";
+            }
+        } else {
+            echo "<h2>Error:</h2><pre>Invalid username or password.</pre>";
+        }
     } else {
-        echo "<h2>Error:</h2>";
-        echo "<pre>" . $bitcoin->error . "</pre>";
+        echo "<h2>Error:</h2><pre>User not found.</pre>";
     }
+
+    $stmt->close();
 }
+
+$conn->close();
 ?>
