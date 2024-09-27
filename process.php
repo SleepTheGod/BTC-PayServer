@@ -3,11 +3,12 @@ session_start();
 
 // Database connection
 $host = 'localhost'; // Hostname
-$db = 'localhost'; // Database name (this is unusual, ensure you replace with actual database name)
+$db = 'localhost'; // Replace with your actual database name
 $user = 'root'; // Database username
 $pass = 'root'; // Database password
 
 try {
+    // Update the database name if needed
     $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
